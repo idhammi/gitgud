@@ -1,13 +1,22 @@
 plugins {
     alias(libs.plugins.gitgud.android.library)
     alias(libs.plugins.gitgud.hilt)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "id.idham.gitgud.feature.search"
+
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
+    implementation(projects.core.data)
+    implementation(projects.core.model)
+    implementation(projects.core.ui)
 
     implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)

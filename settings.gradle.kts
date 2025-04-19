@@ -29,6 +29,7 @@ dependencyResolutionManagement {
 rootProject.name = "gitgud"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
+include(":core:common")
 include(":core:network")
 include(":core:model")
 include(":core:database")
