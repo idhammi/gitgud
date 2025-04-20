@@ -18,8 +18,11 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.ui)
 
-    implementation(libs.androidx.core.ktx)
     testImplementation(libs.junit)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

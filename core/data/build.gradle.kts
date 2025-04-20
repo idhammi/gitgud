@@ -12,6 +12,10 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.core.database)
 
-    // Pagination
-    implementation(libs.androidx.paging.runtime.ktx)
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.mockwebserver)
 }

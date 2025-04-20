@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -68,7 +69,8 @@ internal fun SearchScreen(
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .testTag("search_input"),
                 value = state.searchQuery,
                 onValueChange = { action(SearchAction.SetQuery(it)) },
                 label = { Text("Search") },
@@ -99,6 +101,7 @@ fun UserListItem(
     onItemClicked: (User) -> Unit
 ) {
     Card(
+        modifier = Modifier.testTag("user_item"),
         onClick = { onItemClicked(item) },
     ) {
         Row(
