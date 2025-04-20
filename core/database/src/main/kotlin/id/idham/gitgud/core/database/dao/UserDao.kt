@@ -12,6 +12,12 @@ interface UserDao {
     @Query("SELECT * FROM users ORDER BY id ASC")
     fun getAll(): Flow<List<UserEntity>>
 
+    @Query("SELECT * FROM users WHERE login = :username LIMIT 1")
+    fun getUser(username: String): Flow<UserEntity?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(user: UserEntity)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(users: List<UserEntity>)
 

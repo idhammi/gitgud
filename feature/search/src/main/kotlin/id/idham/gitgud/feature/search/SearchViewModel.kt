@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.idham.gitgud.core.common.UiState
 import id.idham.gitgud.core.common.ViewModelState
-import id.idham.gitgud.core.common.flow.mapToUiState
 import id.idham.gitgud.core.data.repository.UserRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,7 +18,9 @@ class SearchViewModel @Inject constructor(
 ) : ViewModelState<SearchState, SearchAction>(SearchState()) {
 
     init {
-        sendAction(SearchAction.LoadInitialUsers)
+        if (currentState().searchQuery.isBlank()) {
+            sendAction(SearchAction.LoadInitialUsers)
+        }
     }
 
     override fun sendAction(action: SearchAction) {
@@ -37,10 +38,14 @@ class SearchViewModel @Inject constructor(
     private fun getUsers() {
         viewModelScope.launch {
             repository.getUsers()
-                .onStart { update { copy(isLoading = true, error = null) } }
-                .catch { update { copy(isLoading = false, error = it.message) } }
+                .onStart { update { copy(users = UiState.Loading) } }
+                .catch { update { copy(users = UiState.Error(it.message)) } }
                 .collect { users ->
-                    update { copy(isLoading = false, users = users, error = null) }
+                    if (users.isEmpty()) {
+                        update { copy(users = UiState.Empty) }
+                    } else {
+                        update { copy(users = UiState.Success(users)) }
+                    }
                 }
         }
     }
@@ -48,16 +53,13 @@ class SearchViewModel @Inject constructor(
     private fun searchUsers(query: String) {
         viewModelScope.launch {
             repository.searchUsers(query)
-                .mapToUiState()
-                .collect { state ->
-                    when (state) {
-                        is UiState.Success -> update { copy(users = state.data, isLoading = false) }
-                        is UiState.Error -> update {
-                            copy(error = state.message, isLoading = false)
-                        }
-
-                        is UiState.Empty -> update { copy(users = emptyList(), isLoading = false) }
-                        is UiState.Loading -> update { copy(isLoading = true) }
+                .onStart { update { copy(users = UiState.Loading) } }
+                .catch { update { copy(users = UiState.Error(it.message)) } }
+                .collect { users ->
+                    if (users.isEmpty()) {
+                        update { copy(users = UiState.Empty) }
+                    } else {
+                        update { copy(users = UiState.Success(users)) }
                     }
                 }
         }

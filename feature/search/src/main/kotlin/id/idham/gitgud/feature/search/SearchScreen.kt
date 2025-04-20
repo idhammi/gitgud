@@ -18,9 +18,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,7 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import id.idham.gitgud.core.model.SimpleUser
+import id.idham.gitgud.core.common.UiState
+import id.idham.gitgud.core.model.User
 import id.idham.gitgud.core.ui.EmptyState
 import id.idham.gitgud.core.ui.ErrorState
 import id.idham.gitgud.core.ui.LoadingState
@@ -40,7 +41,7 @@ import id.idham.gitgud.core.ui.LoadingState
 fun SearchScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
-    onItemClicked: (SimpleUser) -> Unit
+    onItemClicked: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     SearchScreen(
@@ -56,7 +57,7 @@ internal fun SearchScreen(
     modifier: Modifier = Modifier,
     state: SearchState,
     action: (SearchAction) -> Unit,
-    onItemClicked: (SimpleUser) -> Unit
+    onItemClicked: (String) -> Unit
 ) {
     Scaffold { innerPadding ->
         Column(
@@ -64,26 +65,26 @@ internal fun SearchScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            TextField(
+            OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 value = state.searchQuery,
                 onValueChange = { action(SearchAction.SetQuery(it)) },
                 label = { Text("Search") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") }
+                trailingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") }
             )
-            when {
-                state.isLoading -> LoadingState()
-                state.error != null -> ErrorState(state.error)
-                state.users.isEmpty() -> EmptyState()
-                else -> {
+            when (state.users) {
+                is UiState.Loading -> LoadingState()
+                is UiState.Error -> ErrorState(state.users.message)
+                is UiState.Empty -> EmptyState()
+                is UiState.Success -> {
                     LazyColumn(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(state.users, { user -> user.id }) { item ->
-                            UserListItem(item) { onItemClicked(it) }
+                        items(state.users.data, { user -> user.id }) { item ->
+                            UserListItem(item) { onItemClicked(it.login) }
                         }
                     }
                 }
@@ -94,8 +95,8 @@ internal fun SearchScreen(
 
 @Composable
 fun UserListItem(
-    item: SimpleUser,
-    onItemClicked: (SimpleUser) -> Unit
+    item: User,
+    onItemClicked: (User) -> Unit
 ) {
     Card(
         onClick = { onItemClicked(item) },
@@ -126,21 +127,25 @@ fun UserListItem(
 @Preview(showBackground = true)
 @Composable
 fun SearchScreen_Preview() {
-    val item = SimpleUser(
-        login = "Bambang",
-        id = 1,
-        nodeId = "1",
-        avatarUrl = "https://example.com/avatar1.png",
-        url = "https://example.com/user1",
-        htmlUrl = "https://example.com/user1/html"
+    val users = listOf(
+        User(
+            login = "Bambang",
+            id = 1,
+            avatarUrl = "https://example.com/avatar1.png",
+            htmlUrl = "https://example.com/user1/html"
+        ),
+        User(
+            login = "Bambang",
+            id = 2,
+            avatarUrl = "https://example.com/avatar1.png",
+            htmlUrl = "https://example.com/user1/html"
+        )
     )
 
     SearchScreen(
         state = SearchState(
             searchQuery = "Bambang",
-            isLoading = false,
-            users = listOf(item, item, item),
-            error = null
+            users = UiState.Success(users),
         ),
         action = { },
         onItemClicked = { }

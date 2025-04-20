@@ -6,14 +6,20 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import id.idham.gitgud.core.data.repository.UserRepository
 import id.idham.gitgud.core.data.repository.UserRepositoryImpl
-import javax.inject.Singleton
+import id.idham.gitgud.core.data.util.ConnectivityManagerNetworkMonitor
+import id.idham.gitgud.core.data.util.NetworkMonitor
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface DataModule {
-    @Singleton
+abstract class DataModule {
+
     @Binds
-    fun bindsUserRepository(
+    internal abstract fun bindsUserRepository(
         userRepository: UserRepositoryImpl
     ): UserRepository
+
+    @Binds
+    internal abstract fun provideNetworkMonitor(
+        networkMonitor: ConnectivityManagerNetworkMonitor
+    ): NetworkMonitor
 }

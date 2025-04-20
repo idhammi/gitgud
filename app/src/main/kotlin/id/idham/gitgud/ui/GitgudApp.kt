@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import id.idham.gitgud.feature.search.navigation.SearchRoute
 import id.idham.gitgud.feature.search.navigation.searchScreen
+import id.idham.gitgud.feature.user.navigation.navigateToUser
+import id.idham.gitgud.feature.user.navigation.userScreen
 
 @Composable
 fun GitgudApp(modifier: Modifier = Modifier) {
@@ -16,7 +18,8 @@ fun GitgudApp(modifier: Modifier = Modifier) {
         modifier = modifier
     ) {
         searchScreen(
-            onItemClicked = { }
+            onItemClicked = navController::navigateToUser
         )
+        userScreen()
     }
 }

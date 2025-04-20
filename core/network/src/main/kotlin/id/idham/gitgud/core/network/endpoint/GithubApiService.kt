@@ -23,8 +23,7 @@ interface GithubApiService {
     @GET("/users/{username}/repos")
     suspend fun getUserRepos(
         @Path("username") username: String,
-        @Query("page") page: Int,
-        @Query("per_page") perPage: Int,
+        @Query("per_page") perPage: Int = 20,
     ): List<UserRepoDto>
 
     @GET("/search/users")
