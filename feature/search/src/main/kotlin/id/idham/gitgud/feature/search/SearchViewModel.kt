@@ -18,9 +18,7 @@ class SearchViewModel @Inject constructor(
 ) : ViewModelState<SearchState, SearchAction>(SearchState()) {
 
     init {
-        if (currentState().searchQuery.isBlank()) {
-            sendAction(SearchAction.LoadInitialUsers)
-        }
+        sendAction(SearchAction.LoadInitialUsers)
     }
 
     override fun sendAction(action: SearchAction) {
@@ -38,13 +36,13 @@ class SearchViewModel @Inject constructor(
     private fun getUsers() {
         viewModelScope.launch {
             repository.getUsers()
-                .onStart { update { copy(users = UiState.Loading) } }
-                .catch { update { copy(users = UiState.Error(it.message)) } }
+                .onStart { update { copy(initialUsers = UiState.Loading) } }
+                .catch { update { copy(initialUsers = UiState.Error(it.message)) } }
                 .collect { users ->
                     if (users.isEmpty()) {
-                        update { copy(users = UiState.Empty) }
+                        update { copy(initialUsers = UiState.Empty) }
                     } else {
-                        update { copy(users = UiState.Success(users)) }
+                        update { copy(initialUsers = UiState.Success(users)) }
                     }
                 }
         }
@@ -53,13 +51,13 @@ class SearchViewModel @Inject constructor(
     private fun searchUsers(query: String) {
         viewModelScope.launch {
             repository.searchUsers(query)
-                .onStart { update { copy(users = UiState.Loading) } }
-                .catch { update { copy(users = UiState.Error(it.message)) } }
+                .onStart { update { copy(searchResult = UiState.Loading) } }
+                .catch { update { copy(searchResult = UiState.Error(it.message)) } }
                 .collect { users ->
                     if (users.isEmpty()) {
-                        update { copy(users = UiState.Empty) }
+                        update { copy(searchResult = UiState.Empty) }
                     } else {
-                        update { copy(users = UiState.Success(users)) }
+                        update { copy(searchResult = UiState.Success(users)) }
                     }
                 }
         }
@@ -69,14 +67,11 @@ class SearchViewModel @Inject constructor(
 
     private fun debounceSearch(query: String) {
         searchJob?.cancel()
-        if (query.isBlank()) {
-            sendAction(SearchAction.LoadInitialUsers)
-            return
-        }
-
-        searchJob = viewModelScope.launch {
-            delay(400)
-            sendAction(SearchAction.SubmitSearch)
+        if (query.isNotBlank()) {
+            searchJob = viewModelScope.launch {
+                delay(400)
+                sendAction(SearchAction.SubmitSearch)
+            }
         }
     }
 }

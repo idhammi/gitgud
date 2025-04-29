@@ -5,5 +5,6 @@ import id.idham.gitgud.core.model.User
 
 data class SearchState(
     val searchQuery: String = "",
-    val users: UiState<List<User>> = UiState.Loading,
+    val initialUsers: UiState<List<User>> = UiState.Idle,
+    val searchResult: UiState<List<User>> = UiState.Idle,
 )

@@ -63,6 +63,7 @@ internal fun UserScreen(
                 is UiState.Error -> item { ErrorState(state.user.message) }
                 is UiState.Empty -> item { EmptyState() }
                 is UiState.Success -> item { UserDetail(state.user.data) }
+                else -> {}
             }
             // user repos
             item {

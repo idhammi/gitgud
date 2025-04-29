@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -74,22 +76,31 @@ internal fun SearchScreen(
                 value = state.searchQuery,
                 onValueChange = { action(SearchAction.SetQuery(it)) },
                 label = { Text("Search") },
+                maxLines = 1,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 trailingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") }
             )
-            when (state.users) {
+            val listUsers = if (state.searchQuery.isBlank()) {
+                state.initialUsers
+            } else {
+                state.searchResult
+            }
+            when (listUsers) {
                 is UiState.Loading -> LoadingState()
-                is UiState.Error -> ErrorState(state.users.message)
+                is UiState.Error -> ErrorState(listUsers.message)
                 is UiState.Empty -> EmptyState()
                 is UiState.Success -> {
                     LazyColumn(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(state.users.data, { user -> user.id }) { item ->
+                        items(listUsers.data, { user -> user.id }) { item ->
                             UserListItem(item) { onItemClicked(it.login) }
                         }
                     }
                 }
+
+                else -> {}
             }
         }
     }
@@ -147,8 +158,8 @@ fun SearchScreen_Preview() {
 
     SearchScreen(
         state = SearchState(
-            searchQuery = "Bambang",
-            users = UiState.Success(users),
+            searchQuery = "",
+            initialUsers = UiState.Success(users),
         ),
         action = { },
         onItemClicked = { }
