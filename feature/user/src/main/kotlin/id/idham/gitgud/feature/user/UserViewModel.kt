@@ -5,11 +5,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import id.idham.gitgud.core.common.UiState
 import id.idham.gitgud.core.common.ViewModelState
 import id.idham.gitgud.core.data.repository.UserRepository
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onStart
+import id.idham.gitgud.core.ui.utils.toUiState
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = UserViewModel.Factory::class)
@@ -33,35 +31,21 @@ class UserViewModel @AssistedInject constructor(
 
     private fun loadUser() {
         viewModelScope.launch {
-            repository.getUser(username)
-                .onStart { update { copy(user = UiState.Loading) } }
-                .catch { update { copy(user = UiState.Error(it.message)) } }
-                .collect { user ->
-                    update {
-                        copy(
-                            user = if (user != null) {
-                                UiState.Success(user)
-                            } else {
-                                UiState.Empty
-                            }
-                        )
-                    }
+            repository.getUser(username).collect { user ->
+                update {
+                    copy(user = user.toUiState())
                 }
+            }
         }
     }
 
     private fun loadRepos() {
         viewModelScope.launch {
-            repository.getUserRepo(username)
-                .onStart { update { copy(user = UiState.Loading) } }
-                .catch { update { copy(user = UiState.Error(it.message)) } }
-                .collect { repos ->
-                    if (repos.isEmpty()) {
-                        update { copy(repos = UiState.Empty) }
-                    } else {
-                        update { copy(repos = UiState.Success(repos)) }
-                    }
+            repository.getUserRepo(username).collect { repos ->
+                update {
+                    copy(repos = repos.toUiState { it.isEmpty() })
                 }
+            }
         }
     }
 

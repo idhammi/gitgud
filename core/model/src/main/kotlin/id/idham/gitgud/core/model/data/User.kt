@@ -1,4 +1,4 @@
-package id.idham.gitgud.core.model
+package id.idham.gitgud.core.model.data
 
 data class User(
     val login: String,

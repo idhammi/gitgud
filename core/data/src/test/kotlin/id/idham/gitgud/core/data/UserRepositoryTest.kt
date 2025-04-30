@@ -2,7 +2,7 @@ package id.idham.gitgud.core.data
 
 import id.idham.gitgud.core.data.repository.UserRepository
 import id.idham.gitgud.core.data.repository.UserRepositoryImpl
-import id.idham.gitgud.core.data.util.NetworkMonitor
+import id.idham.gitgud.core.data.utils.NetworkMonitor
 import id.idham.gitgud.core.database.dao.UserDao
 import id.idham.gitgud.core.database.model.UserEntity
 import id.idham.gitgud.core.database.model.toDomain

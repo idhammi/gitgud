@@ -2,7 +2,7 @@ package id.idham.gitgud.core.network.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import id.idham.gitgud.core.model.UserRepo
+import id.idham.gitgud.core.model.data.UserRepo
 
 @JsonClass(generateAdapter = true)
 data class UserRepoDto(

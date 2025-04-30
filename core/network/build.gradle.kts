@@ -8,11 +8,12 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.model)
+    api(projects.core.common)
+    api(projects.core.model)
 
     // Network
-    api(libs.retrofit)
-    api(libs.retrofit.moshi)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.moshi)
     implementation(libs.moshi.kotlin)
     ksp(libs.moshi.kotlin.codegen)
 

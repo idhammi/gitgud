@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -27,18 +28,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import id.idham.gitgud.core.common.UiState
-import id.idham.gitgud.core.model.User
+import id.idham.gitgud.core.model.data.User
 import id.idham.gitgud.core.ui.EmptyState
 import id.idham.gitgud.core.ui.ErrorState
 import id.idham.gitgud.core.ui.LoadingState
+import id.idham.gitgud.core.ui.UiState
+import id.idham.gitgud.core.ui.error.ErrorMessage
 
 @Composable
 fun SearchScreen(
@@ -62,6 +66,8 @@ internal fun SearchScreen(
     action: (SearchAction) -> Unit,
     onItemClicked: (String) -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Scaffold { innerPadding ->
         Column(
             modifier = modifier
@@ -77,6 +83,9 @@ internal fun SearchScreen(
                 onValueChange = { action(SearchAction.SetQuery(it)) },
                 label = { Text("Search") },
                 maxLines = 1,
+                keyboardActions = KeyboardActions(
+                    onSearch = { keyboardController?.hide() }
+                ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 trailingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") }
             )
@@ -87,7 +96,13 @@ internal fun SearchScreen(
             }
             when (listUsers) {
                 is UiState.Loading -> LoadingState()
-                is UiState.Error -> ErrorState(listUsers.message)
+                is UiState.Error -> {
+                    when (val error = listUsers.error) {
+                        is ErrorMessage.Text -> ErrorState(error.message)
+                        is ErrorMessage.Resource -> ErrorState(stringResource(error.resId))
+                    }
+                }
+
                 is UiState.Empty -> EmptyState()
                 is UiState.Success -> {
                     LazyColumn(

@@ -1,4 +1,4 @@
-package id.idham.gitgud.core.data.util
+package id.idham.gitgud.core.data.utils
 
 import android.content.Context
 import android.net.ConnectivityManager

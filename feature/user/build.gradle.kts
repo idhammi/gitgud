@@ -15,8 +15,8 @@ android {
 
 dependencies {
     implementation(projects.core.data)
-    implementation(projects.core.model)
     implementation(projects.core.ui)
+    implementation(projects.core.designsystem)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

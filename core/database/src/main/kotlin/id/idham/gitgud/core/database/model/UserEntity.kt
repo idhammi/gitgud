@@ -3,7 +3,7 @@ package id.idham.gitgud.core.database.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import id.idham.gitgud.core.model.User
+import id.idham.gitgud.core.model.data.User
 
 @Entity(tableName = "users")
 data class UserEntity(

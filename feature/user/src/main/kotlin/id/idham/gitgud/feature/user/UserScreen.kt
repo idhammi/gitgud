@@ -21,17 +21,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import id.idham.gitgud.core.common.UiState
-import id.idham.gitgud.core.model.User
-import id.idham.gitgud.core.model.UserRepo
+import id.idham.gitgud.core.model.data.User
+import id.idham.gitgud.core.model.data.UserRepo
 import id.idham.gitgud.core.ui.EmptyState
 import id.idham.gitgud.core.ui.ErrorState
 import id.idham.gitgud.core.ui.LoadingState
+import id.idham.gitgud.core.ui.UiState
+import id.idham.gitgud.core.ui.error.ErrorMessage
 
 @Composable
 fun UserScreen(
@@ -60,7 +62,13 @@ internal fun UserScreen(
             // user detail
             when (state.user) {
                 is UiState.Loading -> item { LoadingState() }
-                is UiState.Error -> item { ErrorState(state.user.message) }
+                is UiState.Error -> item {
+                    when (val error = state.user.error) {
+                        is ErrorMessage.Text -> ErrorState(error.message)
+                        is ErrorMessage.Resource -> ErrorState(stringResource(error.resId))
+                    }
+                }
+
                 is UiState.Empty -> item { EmptyState() }
                 is UiState.Success -> item { UserDetail(state.user.data) }
                 else -> {}

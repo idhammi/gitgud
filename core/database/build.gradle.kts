@@ -8,7 +8,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.model)
+    api(projects.core.model)
 
     // Room
     implementation(libs.androidx.room.runtime)

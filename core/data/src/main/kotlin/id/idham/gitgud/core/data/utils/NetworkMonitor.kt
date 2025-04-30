@@ -1,4 +1,4 @@
-package id.idham.gitgud.core.data.util
+package id.idham.gitgud.core.data.utils
 
 import kotlinx.coroutines.flow.Flow
 

@@ -1,8 +1,8 @@
 package id.idham.gitgud.feature.search
 
-import id.idham.gitgud.core.common.UiState
 import id.idham.gitgud.core.data.repository.UserRepository
-import id.idham.gitgud.core.model.User
+import id.idham.gitgud.core.model.data.User
+import id.idham.gitgud.core.ui.UiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -66,8 +66,8 @@ class SearchViewModelTest {
         advanceTimeBy(500) // for debounce
         viewModel.sendAction(SearchAction.SubmitSearch)
 
-        val state = viewModel.state.first { it.users is UiState.Success }
-        val users = (state.users as UiState.Success).data
+        val state = viewModel.state.first { it.searchResult is UiState.Success }
+        val users = (state.searchResult as UiState.Success).data
 
         assertEquals("idham", state.searchQuery)
         assertEquals(fakeUsers, users)
@@ -81,8 +81,8 @@ class SearchViewModelTest {
         advanceTimeBy(500)
         viewModel.sendAction(SearchAction.SubmitSearch)
 
-        val state = viewModel.state.first { it.users !is UiState.Loading }
-        assertTrue(state.users is UiState.Empty)
+        val state = viewModel.state.first { it.searchResult !is UiState.Loading }
+        assertTrue(state.searchResult is UiState.Empty)
     }
 
     @Test
@@ -95,9 +95,9 @@ class SearchViewModelTest {
         advanceTimeBy(500)
         viewModel.sendAction(SearchAction.SubmitSearch)
 
-        val state = viewModel.state.first { it.users !is UiState.Loading }
-        assertTrue(state.users is UiState.Error)
-        assertEquals("Failed to load", (state.users as UiState.Error).message)
+        val state = viewModel.state.first { it.searchResult !is UiState.Loading }
+        assertTrue(state.searchResult is UiState.Error)
+        assertEquals("Failed to load", (state.searchResult as UiState.Error).message)
     }
 
     @Test
@@ -120,7 +120,7 @@ class SearchViewModelTest {
 
         viewModel.sendAction(SearchAction.SetQuery(""))
         advanceTimeBy(500)
-        val state = viewModel.state.first { it.users is UiState.Success }
-        assertEquals(users, (state.users as UiState.Success).data)
+        val state = viewModel.state.first { it.initialUsers is UiState.Success }
+        assertEquals(users, (state.initialUsers as UiState.Success).data)
     }
 }

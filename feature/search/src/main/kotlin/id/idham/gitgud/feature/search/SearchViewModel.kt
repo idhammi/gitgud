@@ -2,13 +2,11 @@ package id.idham.gitgud.feature.search
 
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import id.idham.gitgud.core.common.UiState
 import id.idham.gitgud.core.common.ViewModelState
 import id.idham.gitgud.core.data.repository.UserRepository
+import id.idham.gitgud.core.ui.utils.toUiState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,31 +33,21 @@ class SearchViewModel @Inject constructor(
 
     private fun getUsers() {
         viewModelScope.launch {
-            repository.getUsers()
-                .onStart { update { copy(initialUsers = UiState.Loading) } }
-                .catch { update { copy(initialUsers = UiState.Error(it.message)) } }
-                .collect { users ->
-                    if (users.isEmpty()) {
-                        update { copy(initialUsers = UiState.Empty) }
-                    } else {
-                        update { copy(initialUsers = UiState.Success(users)) }
-                    }
+            repository.getUsers().collect { result ->
+                update {
+                    copy(initialUsers = result.toUiState { it.isEmpty() })
                 }
+            }
         }
     }
 
     private fun searchUsers(query: String) {
         viewModelScope.launch {
-            repository.searchUsers(query)
-                .onStart { update { copy(searchResult = UiState.Loading) } }
-                .catch { update { copy(searchResult = UiState.Error(it.message)) } }
-                .collect { users ->
-                    if (users.isEmpty()) {
-                        update { copy(searchResult = UiState.Empty) }
-                    } else {
-                        update { copy(searchResult = UiState.Success(users)) }
-                    }
+            repository.searchUsers(query).collect { result ->
+                update {
+                    copy(searchResult = result.toUiState { it.isEmpty() })
                 }
+            }
         }
     }
 

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_rate_limit">API request limit exceeded. Please try again later.</string>
+    <string name="error_network">Network connection lost. Please check your internet.</string>
+    <string name="error_unauthorized">You are not authorized. Please login again.</string>
+    <string name="error_not_found">Requested data not found.</string>
+    <string name="error_unknown">Unexpected error occurred. Please try again.</string><string name="am">am</string>
+</resources>

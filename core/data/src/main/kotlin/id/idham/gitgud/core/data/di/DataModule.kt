@@ -6,8 +6,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import id.idham.gitgud.core.data.repository.UserRepository
 import id.idham.gitgud.core.data.repository.UserRepositoryImpl
-import id.idham.gitgud.core.data.util.ConnectivityManagerNetworkMonitor
-import id.idham.gitgud.core.data.util.NetworkMonitor
+import id.idham.gitgud.core.data.utils.ConnectivityManagerNetworkMonitor
+import id.idham.gitgud.core.data.utils.NetworkMonitor
 
 @Module
 @InstallIn(SingletonComponent::class)
